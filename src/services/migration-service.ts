@@ -218,9 +218,8 @@ export async function createSnapshot(riskId: string, notes?: string) {
         notes,
     });
 
+
     return snapshot;
-}
-return `${year}-${month}`;
 }
 
 /**
