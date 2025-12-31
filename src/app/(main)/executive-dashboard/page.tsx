@@ -6,40 +6,52 @@ import { products as mockProducts } from "@/lib/mock-data";
 import { ExecutiveDashboardClient } from "@/components/dashboard/executive/executive-dashboard-client";
 
 async function getExecutiveData() {
+  try {
+    const products = await getProducts();
+    const finalProducts = products.length > 0 ? products : mockProducts;
 
-  const products = await getProducts();
-  const finalProducts = products.length > 0 ? products : mockProducts;
+    const allData = await getRisksAndIssues(finalProducts);
 
-  const allData = await getRisksAndIssues(finalProducts);
+    const allRisks = allData.filter(item => item.type === 'Risk');
+    const allIssues = allData.filter(item => item.type === 'Issue');
 
-  const allRisks = allData.filter(item => item.type === 'Risk');
-  const allIssues = allData.filter(item => item.type === 'Issue');
-
-  const openRisks = allData.filter(item => {
-    return item.type === 'Risk' && item.Status && item.Status !== 'Closed' && item.Status !== 'Converted to Issue';
-  });
-
-  const scoredRisks = openRisks
-    .map((risk) => {
-      const probability = risk.Probability ?? 0;
-      const impact = risk["Impact Rating (0.05-0.8)"] ?? 0;
-      const score = probability * impact;
-      return {
-        ...risk,
-        riskScore: score,
-      };
+    const openRisks = allData.filter(item => {
+      return item.type === 'Risk' && item.Status && item.Status !== 'Closed' && item.Status !== 'Converted to Issue';
     });
 
-  scoredRisks.sort((a, b) => b.riskScore - a.riskScore);
+    const scoredRisks = openRisks
+      .map((risk) => {
+        const probability = risk.Probability ?? 0;
+        const impact = risk["Impact Rating (0.05-0.8)"] ?? 0;
+        const score = probability * impact;
+        return {
+          ...risk,
+          riskScore: score,
+        };
+      });
 
-  return {
-    top10Risks: scoredRisks.slice(0, 10),
-    allOpenRisks: scoredRisks,
-    allRisks: allRisks,
-    allIssues: allIssues,
-    allData: allData,
-    products: finalProducts,
-  };
+    scoredRisks.sort((a, b) => b.riskScore - a.riskScore);
+
+    return {
+      top10Risks: scoredRisks.slice(0, 10),
+      allOpenRisks: scoredRisks,
+      allRisks: allRisks,
+      allIssues: allIssues,
+      allData: allData,
+      products: finalProducts,
+    };
+  } catch (error) {
+    console.error("Error in getExecutiveData:", error);
+    // Return empty data instead of crashing
+    return {
+      top10Risks: [],
+      allOpenRisks: [],
+      allRisks: [],
+      allIssues: [],
+      allData: [],
+      products: mockProducts,
+    };
+  }
 }
 
 export default async function ExecutiveDashboardPage() {

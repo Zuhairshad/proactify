@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, AlertTriangle } from "lucide-react";
 import { AIDataAnalyst } from "./ai-data-analyst";
 import { StatsCards } from "./stats-cards";
+import { ImportExportButtons } from "@/components/import-export-buttons";
 
 type DashboardClientProps = {
   data: RiskIssue[];
@@ -53,7 +54,7 @@ export function DashboardClient({ data, products }: DashboardClientProps) {
       <StatsCards data={data} activeView={activeTab} />
 
       <Tabs defaultValue="risk" value={activeTab} onValueChange={(value) => setActiveTab(value as 'risk' | 'issue')}>
-        <TabsList className="grid w-full grid-cols-2 md:w-[300px]">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="risk">
             <Shield className="mr-2 h-4 w-4" />
             Risks
@@ -66,12 +67,19 @@ export function DashboardClient({ data, products }: DashboardClientProps) {
 
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Register</CardTitle>
-            <CardDescription>
-              Search, filter, and manage all recorded entries for the selected view.
-            </CardDescription>
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div>
+                <CardTitle>Register</CardTitle>
+                <CardDescription>
+                  Search, filter, and manage all recorded entries for the selected view.
+                </CardDescription>
+              </div>
+              <div className="w-full sm:w-auto flex justify-end">
+                <ImportExportButtons type={activeTab} />
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <TabsContent value="risk" className="mt-4">
               <DataTable columns={riskColumns} data={risks} tableId="risks" />
             </TabsContent>

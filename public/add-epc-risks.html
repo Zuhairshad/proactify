@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add EPC Risks</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        button { padding: 15px 30px; font-size: 16px; cursor: pointer; background: #0070f3; color: white; border: none; border-radius: 5px; }
+        button:hover { background: #0051cc; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Add 15 More EPC Risks</h1>
+    <p>Current database has 5 risks. This will add 15 more to reach 20 total.</p>
+    <button onclick="addRisks()">Add Risks Now</button>
+    <div id="result"></div>
+
+    <script>
+    async function addRisks() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.className = 'info';
+        resultDiv.textContent = 'Adding risks...';
+
+        const risks = [
+            {Title:"Vendor Quality Non-Conformance",Description:"Fabricated steel structures from new vendor failing quality inspections, requiring rework.",ProjectCode:"EPC-2024-02",RiskStatus:"Open",Probability:0.45,"Impact Rating (0.05-0.8)":0.6,Category:"Quality",Owner:"QA/QC Manager"},
+            {Title:"Site Access Road Limitations",Description:"Existing access roads inadequate for heavy equipment transportation, requiring road upgrades.",ProjectCode:"EPC-2024-03",RiskStatus:"Open",Probability:0.5,"Impact Rating (0.05-0.8)":0.4,Category:"Logistics",Owner:"Logistics Coordinator"},
+            {Title:"Cybersecurity Breach Risk",Description:"Project control systems and design data vulnerable to cyber attacks, potentially compromising intellectual property.",ProjectCode:"EPC-2024-01",RiskStatus:"Open",Probability:0.3,"Impact Rating (0.05-0.8)":0.75,Category:"IT Security",Owner:"IT Manager"},
+            {Title:"Utility Connection Delays",Description:"Power and water utility connections from local authority delayed due to capacity constraints.",ProjectCode:"EPC-2024-02",RiskStatus:"Open",Probability:0.55,"Impact Rating (0.05-0.8)":0.55,Category:"Infrastructure",Owner:"Site Manager"},
+            {Title:"Scope Creep from Client",Description:"Client requesting additional features and modifications beyond original scope, affecting budget and timeline.",ProjectCode:"EPC-2024-01",RiskStatus:"Open",Probability:0.7,"Impact Rating (0.05-0.8)":0.65,Category:"Scope Management",Owner:"Project Manager"},
+            {Title:"Health and Safety Incident",Description:"High-risk construction activities increase probability of workplace accidents, potentially causing injuries.",ProjectCode:"EPC-2024-03",RiskStatus:"Open",Probability:0.4,"Impact Rating (0.05-0.8)":0.8,Category:"Health & Safety",Owner:"HSE Manager"},
+            {Title:"Commissioning Equipment Failure",Description:"Critical equipment fails during pre-commissioning tests, requiring troubleshooting and potential replacement.",ProjectCode:"EPC-2024-02",RiskStatus:"Open",Probability:0.35,"Impact Rating (0.05-0.8)":0.7,Category:"Commissioning",Owner:"Commissioning Lead"},
+            { Title:"Subcontractor Default",Description:"Key subcontractor facing financial difficulties may default on contract obligations, leaving work incomplete.",ProjectCode:"EPC-2024-01",RiskStatus:"Open",Probability:0.25,"Impact Rating (0.05-0.8)":0.75,Category:"Procurement",Owner:"Contracts Manager"},
+            {Title:"Material Price Escalation",Description:"Steel and cement prices increasing beyond contract assumptions due to market volatility and global supply constraints.",ProjectCode:"EPC-2024-03",RiskStatus:"Open",Probability:0.75,"Impact Rating (0.05-0.8)":0.6,Category:"Financial",Owner:"Procurement Manager"},
+            {Title:"Insufficient Site Storage Space",Description:"Limited site area causing congestion and inadequate storage for materials and equipment, affecting productivity.",ProjectCode:"EPC-2024-02",RiskStatus:"Open",Probability:0.5,"Impact Rating (0.05-0.8)":0.35,Category:"Logistics",Owner:"Site Manager"},
+            {Title:"Client Approval Bottlenecks",Description:"Slow client review and approval process for engineering deliverables causing delays in downstream activities.",ProjectCode:"EPC-2024-01",RiskStatus:"Open",Probability:0.6,"Impact Rating (0.05-0.8)":0.5,Category:"Client Management",Owner:"Project Manager"},
+            {Title:"Testing Equipment Unavailability",Description:"Specialized testing equipment for quality checks not available locally, requiring import with long lead times.",ProjectCode:"EPC-2024-03",RiskStatus:"Open",Probability:0.4,"Impact Rating (0.05-0.8)":0.45,Category:"Quality",Owner:"QA/QC Manager"},
+            {Title:"Interface with Existing Operations",Description:"Brownfield project requiring work near active facilities, creating safety risks and operational constraints.",ProjectCode:"EPC-2024-02",RiskStatus:"Open",Probability:0.55,"Impact Rating (0.05-0.8)":0.7,Category:"Operations Interface",Owner:"Project Director"},
+            {Title:"Construction Weather Delays",Description:"Monsoon season may extend beyond normal period, affecting outdoor construction activities and concrete curing schedules.",ProjectCode:"EPC-2024-03",RiskStatus:"Open",Probability:0.65,"Impact Rating (0.05-0.8)":0.5,Category:"Construction",Owner:"Construction Manager"},
+            {Title:"Design Interface Conflicts",Description:"Coordination issues between mechanical, electrical, and structural disciplines leading to clashes in 3D model requiring rework.",ProjectCode:"EPC-2024-01",RiskStatus:"Open",Probability:0.55,"Impact Rating (0.05-0.8)":0.45,Category:"Engineering",Owner:"Lead Engineer"}
+        ];
+
+        try {
+            const response = await fetch('/api/risks/bulk', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(risks)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `<h3>✅ Success!</h3><p>Added ${data.imported} risks to the database.</p><p>Total risks in database: ${5 + data.imported}</p><p><a href="/dashboard">Go to Dashboard</a></p>`;
+            } else {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `<h3>❌ Error</h3><p>${data.error || 'Failed to add risks'}</p>`;
+            }
+        } catch (error) {
+            resultDiv.className = 'error';
+            resultDiv.innerHTML = `<h3>❌ Error</h3><p>${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>

@@ -57,7 +57,15 @@ import { Combobox } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { RiskHeatMap } from "@/components/risk-heat-map";
 import { Progress } from "@/components/ui/progress";
-import { createRisk } from "./actions";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { createRisk, getAllRisks } from "./actions";
 import { rephraseDescription, suggestMitigationStrategies, suggestSimilarRisks, suggestTitle } from "@/app/(main)/actions";
 import type { SuggestSimilarRisksOutput, SuggestMitigationStrategiesOutput } from "@/ai/flows";
 
@@ -89,7 +97,7 @@ export function RiskForm() {
   );
 
   const [suggestion, setSuggestion] = React.useState<SuggestSimilarRisksOutput | null>(null);
-  const [isFetchingSuggestion, setIsFetchingSuggestion] = React.useState(false);
+  const [isCheckingSimilar, setIsCheckingSimilar] = React.useState(false);
 
   const [mitigationSuggestions, setMitigationSuggestions] = React.useState<string[]>([]);
   const [isFetchingMitigation, setIsFetchingMitigation] = React.useState(false);
@@ -134,10 +142,16 @@ export function RiskForm() {
 
   React.useEffect(() => {
     async function getPageData() {
-      // TODO: Fetch products and risks via server actions or API routes
-      // For now, using empty arrays - forms will still work for creating new items
-      setProducts([]);
-      setRisks([]);
+      try {
+        const fetchedRisks = await getAllRisks();
+        setRisks(fetchedRisks as any);
+        // Products can remain empty for now as it's not critical for similar risk detection
+        setProducts([]);
+      } catch (error) {
+        console.error('Error loading risks:', error);
+        setRisks([]);
+        setProducts([]);
+      }
     }
     getPageData();
   }, [])
@@ -166,30 +180,33 @@ export function RiskForm() {
     return combinedCodes.sort((a, b) => a.label.localeCompare(b.label));
   }, [products, risks]);
 
-  React.useEffect(() => {
-    if (debouncedDescription.length > 10) {
-      setIsFetchingSuggestion(true);
-      setRephrasedDescription(null);
-      setSuggestion(null);
+  const handleCheckSimilarRisks = async () => {
+    setIsCheckingSimilar(true);
+    setSuggestion(null);
+    setRephrasedDescription(null);
 
-      const existingRisks = risks.map(r => ({
-        id: r.id,
-        title: r.Title,
-        description: r.Description,
-        mitigationPlan: r.MitigationPlan,
-        contingencyPlan: r.ContingencyPlan,
-        probability: r.Probability,
-        impactRating: r['Impact Rating (0.05-0.8)'],
-      }))
+    const existingRisks = risks.map(r => ({
+      id: r.id,
+      title: r.Title,
+      description: r.Description,
+      mitigationPlan: r.MitigationPlan,
+      contingencyPlan: r.ContingencyPlan,
+      probability: r.Probability,
+      impactRating: r['Impact Rating (0.05-0.8)'],
+    }));
 
-      suggestSimilarRisks({ description: debouncedDescription, existingRisks: JSON.stringify(existingRisks) })
-        .then((res) => setSuggestion(res))
-        .catch(() => toast({ variant: 'destructive', title: 'Could not fetch suggestions.' }))
-        .finally(() => setIsFetchingSuggestion(false));
-    } else {
-      setSuggestion(null);
+    try {
+      const res = await suggestSimilarRisks({
+        description: descriptionValue,
+        existingRisks: JSON.stringify(existingRisks)
+      });
+      setSuggestion(res);
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Could not fetch similar risks.' });
+    } finally {
+      setIsCheckingSimilar(false);
     }
-  }, [debouncedDescription, toast, risks]);
+  };
 
   const handleSuggestMitigations = async () => {
     setIsFetchingMitigation(true);
@@ -432,51 +449,122 @@ export function RiskForm() {
                     )}
                     Rephrase with AI
                   </Button>
-                  {isFetchingSuggestion && (
-                    <div className="flex items-center text-sm text-muted-foreground">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCheckSimilarRisks}
+                    disabled={isCheckingSimilar || !descriptionValue || descriptionValue.length < 10}
+                  >
+                    {isCheckingSimilar ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Checking for similar risks...
-                    </div>
-                  )}
+                    ) : (
+                      <Bot className="mr-2 h-4 w-4" />
+                    )}
+                    Check for Similar Risks
+                  </Button>
                   {suggestion?.matchedRisk && suggestion.detailedSummary && (
-                    <Alert className="border-accent">
-                      <Bot className="h-4 w-4" />
-                      <AlertTitle>Potential Duplicate Found: {suggestion.matchedRisk.title}</AlertTitle>
-                      <AlertDescription>
-                        <div className="space-y-4 mt-2">
-                          <Card>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-sm">Match Analysis</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-xs">
-                              <p>{suggestion.detailedSummary.analysis}</p>
-                            </CardContent>
-                          </Card>
-                          <div className="grid grid-cols-2 gap-4">
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm">Key Metrics</CardTitle>
-                              </CardHeader>
-                              <CardContent className="text-xs space-y-1">
+                    <Card className="border-accent">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Bot className="h-5 w-5" />
+                          Similar Risks Found
+                        </CardTitle>
+                        <CardDescription>
+                          Review the following similar risks to make an informed decision
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md border">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead className="text-center">Probability</TableHead>
+                                <TableHead className="text-center">Impact</TableHead>
+                                <TableHead className="text-center">Risk Score</TableHead>
+                                <TableHead className="text-center">Similarity</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell className="font-medium max-w-[200px]">
+                                  {suggestion.matchedRisk.title}
+                                </TableCell>
+                                <TableCell className="max-w-[300px] text-sm text-muted-foreground">
+                                  {suggestion.matchedRisk.description?.substring(0, 100)}{suggestion.matchedRisk.description && suggestion.matchedRisk.description.length > 100 ? '...' : ''}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Badge variant="outline">
+                                    {suggestion.matchedRisk.probability ? (suggestion.matchedRisk.probability * 100).toFixed(0) + '%' : 'N/A'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Badge variant="outline">
+                                    {suggestion.matchedRisk.impactRating ? suggestion.matchedRisk.impactRating.toFixed(2) : 'N/A'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Badge variant={(
+                                    suggestion.matchedRisk.probability && suggestion.matchedRisk.impactRating &&
+                                    (suggestion.matchedRisk.probability * suggestion.matchedRisk.impactRating) >= 0.15
+                                  ) ? "destructive" : "secondary"}>
+                                    {suggestion.matchedRisk.probability && suggestion.matchedRisk.impactRating
+                                      ? (suggestion.matchedRisk.probability * suggestion.matchedRisk.impactRating).toFixed(3)
+                                      : 'N/A'
+                                    }
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Badge className="bg-amber-500">High</Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => handleUseMatchedRisk(suggestion.matchedRisk!)}
+                                  >
+                                    Use Data
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                        <div className="mt-4 space-y-3">
+                          <div className="rounded-lg bg-muted p-3">
+                            <h4 className="text-sm font-semibold mb-1">AI Analysis</h4>
+                            <p className="text-sm text-muted-foreground">{suggestion.detailedSummary.analysis}</p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="rounded-lg bg-muted p-3">
+                              <h4 className="text-sm font-semibold mb-2">Key Metrics</h4>
+                              <div className="space-y-1">
                                 {suggestion.detailedSummary.keyMetrics.map(metric => (
-                                  <div key={metric.name} className="flex justify-between">
-                                    <span className="font-medium">{metric.name}:</span>
-                                    <Badge variant="secondary">{metric.value}</Badge>
+                                  <div key={metric.name} className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">{metric.name}:</span>
+                                    <span className="font-medium">{metric.value}</span>
                                   </div>
                                 ))}
-                              </CardContent>
-                            </Card>
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm">AI Recommendation</CardTitle>
-                              </CardHeader>
-                              <CardContent className="text-xs">
-                                <p>{suggestion.detailedSummary.recommendation}</p>
-                              </CardContent>
-                            </Card>
+                              </div>
+                            </div>
+                            <div className="rounded-lg bg-muted p-3">
+                              <h4 className="text-sm font-semibold mb-1">AI Recommendation</h4>
+                              <p className="text-xs text-muted-foreground">{suggestion.detailedSummary.recommendation}</p>
+                            </div>
                           </div>
                         </div>
-                        <Button type="button" size="sm" onClick={() => handleUseMatchedRisk(suggestion.matchedRisk!)} className="mt-4">Use This Data</Button>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {suggestion && !suggestion.matchedRisk && (
+                    <Alert>
+                      <Info className="h-4 w-4" />
+                      <AlertTitle>No Similar Risks Found</AlertTitle>
+                      <AlertDescription>
+                        No existing risks were found that match this description. This appears to be a unique risk.
                       </AlertDescription>
                     </Alert>
                   )}

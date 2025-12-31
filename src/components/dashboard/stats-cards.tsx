@@ -60,14 +60,12 @@ export function StatCard({ title, value, icon: Icon, description, gradient, icon
 
 type StatsCardsProps = {
   data: RiskIssue[];
-  activeView: 'risk' | 'issue' | 'all';
+  activeView: 'risk' | 'issue';
 };
 
 export function StatsCards({ data, activeView }: StatsCardsProps) {
   // Filter data based on active view
-  const filteredData = activeView === 'all'
-    ? data
-    : data.filter(item => item.type === (activeView === 'risk' ? 'Risk' : 'Issue'));
+  const filteredData = data.filter(item => item.type === (activeView === 'risk' ? 'Risk' : 'Issue'));
 
   const totalItems = filteredData.length;
 
@@ -94,7 +92,7 @@ export function StatsCards({ data, activeView }: StatsCardsProps) {
   const highPriorityPercentage = totalItems > 0 ? Math.round((highPriorityItems / totalItems) * 100) : 0;
 
   // Get view label for descriptions
-  const viewLabel = activeView === 'risk' ? 'risks' : activeView === 'issue' ? 'issues' : 'risks and issues';
+  const viewLabel = activeView === 'risk' ? 'risks' : 'issues';
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

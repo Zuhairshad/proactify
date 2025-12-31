@@ -52,20 +52,18 @@ export async function getRisksAndIssues(products?: ProductType[]): Promise<RiskI
         ]);
 
         const riskData: RiskIssue[] = risks.map(data => {
-            const project = productList.find(p => p.code === data['Project Code']);
+            const project = productList.find(p => p.code === data.ProjectCode);
+
             return {
                 ...data,
                 id: data._id.toString(),
                 _id: data._id.toString(),
-                type: 'Risk',
+                type: 'Risk' as const,
                 Title: data.Title || data.Description || 'Untitled Risk',
-                // Correctly map 'Risk Status' from the DB to the unified 'Status' field
-                Status: data["Risk Status"] || 'Open',
-                ProjectName: project?.name || data['Project Code'] || 'Unknown',
-                ProjectCode: data['Project Code'],
+                Status: data.RiskStatus || 'Open', // Map RiskStatus to Status
+                ProjectName: project?.name || data.ProjectCode || 'Unknown',
+                ProjectCode: data.ProjectCode,
                 DueDate: toSafeISOString(data.DueDate),
-                // Ensure the correct field name is used here
-                "Impact Rating (0.05-0.8)": data["Impact Rating (0.05-0.8)"] || data["Imapct Rating (0.05-0.8)"] || 0
             } as unknown as RiskIssue;
         });
 

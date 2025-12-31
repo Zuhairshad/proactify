@@ -46,12 +46,12 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
     accessorKey: "Description",
     header: "Description",
     cell: ({ row }) => (
-        <EditableCell
-            initialValue={row.getValue("Description")}
-            rowId={row.original.id}
-            columnId="Description"
-            isTextarea={true}
-        />
+      <EditableCell
+        initialValue={row.getValue("Description")}
+        rowId={row.original.id}
+        columnId="Description"
+        isTextarea={true}
+      />
     ),
   },
   {
@@ -63,13 +63,13 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
       const status = statuses.find((s) => s.value === statusValue);
 
       if (!status) return null;
-      
+
       const handleStatusChange = async (newStatus: Status) => {
         const result = await updateRiskIssueField(row.original.id, 'Risk Status', newStatus);
-        if(result.success){
-          toast({ title: "Status Updated", description: `Status for "${row.original.Title}" updated to ${newStatus}.`});
+        if (result.success) {
+          toast({ title: "Status Updated", description: `Status for "${row.original.Title}" updated to ${newStatus}.` });
         } else {
-          toast({ variant: 'destructive', title: "Update Failed", description: result.message});
+          toast({ variant: 'destructive', title: "Update Failed", description: result.message });
         }
       };
 
@@ -84,8 +84,8 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
             {riskStatuses.map((s) => (
               <SelectItem key={s.value} value={s.value}>
                 <div className="flex items-center">
-                   {s.icon && <s.icon className="mr-2 h-4 w-4 text-muted-foreground" />}
-                   <span>{s.label}</span>
+                  {s.icon && <s.icon className="mr-2 h-4 w-4 text-muted-foreground" />}
+                  <span>{s.label}</span>
                 </div>
               </SelectItem>
             ))}
@@ -94,7 +94,7 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
       );
     },
     filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id));
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -111,22 +111,22 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
     accessorKey: "Owner",
     header: "Owner",
     cell: ({ row }) => (
-        <EditableCell
-            initialValue={row.getValue("Owner")}
-            rowId={row.original.id}
-            columnId="Owner"
-        />
+      <EditableCell
+        initialValue={row.getValue("Owner")}
+        rowId={row.original.id}
+        columnId="Owner"
+      />
     ),
   },
   {
     accessorKey: "DueDate",
     header: "Due Date",
     cell: ({ row }) => (
-        <EditableDateCell
-            initialValue={row.getValue("DueDate")}
-            rowId={row.original.id}
-            columnId="DueDate"
-        />
+      <EditableDateCell
+        initialValue={row.getValue("DueDate")}
+        rowId={row.original.id}
+        columnId="DueDate"
+      />
     )
   },
   {
@@ -134,39 +134,47 @@ export const riskColumns: ColumnDef<RiskIssue>[] = [
     header: "P",
     cell: ({ row }) => {
       const prob = row.getValue("Probability") as number;
-      return prob ? `${(prob).toFixed(1)}` : 'N/A';
+      return (prob !== null && prob !== undefined) ? prob.toFixed(1) : 'N/A';
     },
   },
   {
-    accessorKey: "Impact Rating (0.05-0.8)",
+    accessorKey: "ImpactRating",
     header: "I",
     cell: ({ row }) => {
-       const impact = row.getValue("Impact Rating (0.05-0.8)") as number;
-       return impact?.toFixed(2) ?? 'N/A';
+      const impact = row.getValue("ImpactRating") as number;
+      return (impact !== null && impact !== undefined) ? impact.toFixed(2) : 'N/A';
     },
   },
-   {
+  {
+    accessorKey: "ImpactValue",
+    header: "Impact ($)",
+    cell: ({ row }) => {
+      const impactValue = row.getValue("ImpactValue") as number;
+      return impactValue ? `$${impactValue.toLocaleString()}` : 'N/A';
+    },
+  },
+  {
     accessorKey: "MitigationPlan",
     header: "Mitigation Plan",
     cell: ({ row }) => (
-        <EditableCell
-            initialValue={row.getValue("MitigationPlan")}
-            rowId={row.original.id}
-            columnId="MitigationPlan"
-            isTextarea={true}
-        />
+      <EditableCell
+        initialValue={row.getValue("MitigationPlan")}
+        rowId={row.original.id}
+        columnId="MitigationPlan"
+        isTextarea={true}
+      />
     ),
   },
   {
     accessorKey: "ContingencyPlan",
     header: "Contingency Plan",
     cell: ({ row }) => (
-        <EditableCell
-            initialValue={row.getValue("ContingencyPlan")}
-            rowId={row.original.id}
-            columnId="ContingencyPlan"
-            isTextarea={true}
-        />
+      <EditableCell
+        initialValue={row.getValue("ContingencyPlan")}
+        rowId={row.original.id}
+        columnId="ContingencyPlan"
+        isTextarea={true}
+      />
     ),
   },
   {

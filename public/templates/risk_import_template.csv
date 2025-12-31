@@ -1,0 +1,4 @@
+Project Code,Title,Description,Risk Status,Probability,Impact Rating (0.05-0.8),Impact Value ($),Budget Contingency,Owner,Due Date,Mitigation Plan,Contingency Plan
+PROJ-001,Example Risk 1,This is a sample risk that shows the required format,Open,0.7,0.5,50000,10000,John Doe,2024-12-31,Implement backup system,Have emergency response team
+PROJ-001,Example Risk 2,Another sample showing different values,In Progress,0.4,0.3,25000,5000,Jane Smith,2024-11-15,Regular monitoring and reviews,Escalate to management
+PROJ-002,Example Risk 3,Cross-project example,Open,0.6,0.6,75000,15000,Mike Johnson,2024-12-15,Implement controls,Alternative vendor ready

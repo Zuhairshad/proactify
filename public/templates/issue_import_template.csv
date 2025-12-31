@@ -1,0 +1,4 @@
+Project Name,Title,Discussion,Category,Sub Category,Status,Priority,Impact,Impact ($),Response,Owner,Due Date,Resolution
+PROJ-001,Example Issue 1,This is a sample issue showing the required format,Technical,Database,Open,High,High,15000,Mitigate,John Doe,2024-12-31,Implementing database optimization
+PROJ-001,Example Issue 2,Another sample with different values,Process,Communication,In Progress,Medium,Medium,8000,Accept,Jane Smith,2024-11-30,Setting up communication protocols
+PROJ-002,Example Issue 3,Cross-project issue example,Resource,Staffing,Resolved,Critical,Critical,25000,Transfer,Mike Johnson,2024-12-01,Hired additional team members

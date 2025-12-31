@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add 5 Test Risks</title>
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #0070f3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0051cc;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .risk-card {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .risk-card h4 {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .risk-card p {
+            margin: 3px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Add 5 Similar Test Risks</h1>
+    <p>This will add 5 risks with similar descriptions about <strong>budget overruns</strong>, but with different
+        mitigation plans and risk scores.</p>
+
+    <div id="preview">
+        <h3>Risks to be added:</h3>
+        <div class="risk-card">
+            <h4>Risk 1: Budget Overrun Risk - Scope Changes</h4>
+            <p><strong>Description:</strong> Project costs may exceed allocated budget due to unforeseen scope changes
+                and additional client requirements</p>
+            <p><strong>Probability:</strong> 0.8 (High) | <strong>Impact:</strong> 0.65 | <strong>Risk Score:</strong>
+                0.52</p>
+        </div>
+        <div class="risk-card">
+            <h4>Risk 2: Financial Overrun - Material Costs</h4>
+            <p><strong>Description:</strong> Expenses might go over planned budget because of increasing material and
+                equipment prices</p>
+            <p><strong>Probability:</strong> 0.7 (High) | <strong>Impact:</strong> 0.6 | <strong>Risk Score:</strong>
+                0.42</p>
+        </div>
+        <div class="risk-card">
+            <h4>Risk 3: Cost Escalation Risk</h4>
+            <p><strong>Description:</strong> Total project expenditure could surpass the allocated financial envelope
+                due to unexpected expenses</p>
+            <p><strong>Probability:</strong> 0.6 (Medium) | <strong>Impact:</strong> 0.7 | <strong>Risk Score:</strong>
+                0.42</p>
+        </div>
+        <div class="risk-card">
+            <h4>Risk 4: Budget Breach - Labor Variance</h4>
+            <p><strong>Description:</strong> Actual spending may exceed budgeted amounts due to labor cost variances and
+                overtime requirements</p>
+            <p><strong>Probability:</strong> 0.75 (High) | <strong>Impact:</strong> 0.55 | <strong>Risk Score:</strong>
+                0.41</p>
+        </div>
+        <div class="risk-card">
+            <h4>Risk 5: Financial Constraint Risk</h4>
+            <p><strong>Description:</strong> Project budget might be insufficient to cover all planned activities due to
+                underestimation of costs</p>
+            <p><strong>Probability:</strong> 0.5 (Medium) | <strong>Impact:</strong> 0.75 | <strong>Risk Score:</strong>
+                0.38</p>
+        </div>
+    </div>
+
+    <button onclick="addRisks()" id="addBtn">Add These 5 Risks to Database</button>
+    <div id="result"></div>
+
+    <script>
+        async function addRisks() {
+            const resultDiv = document.getElementById('result');
+            const addBtn = document.getElementById('addBtn');
+
+            resultDiv.className = 'info';
+            resultDiv.textContent = 'Adding risks to database...';
+            addBtn.disabled = true;
+
+            const risks = [
+                {
+                    Title: "Budget Overrun Risk - Scope Changes",
+                    Description: "Project costs may exceed allocated budget due to unforeseen scope changes and additional client requirements",
+                    Month: "2025-01",
+                    ProjectCode: "EPC-2024-01",
+                    RiskStatus: "Open",
+                    Probability: 0.8,
+                    ImpactRating: 0.65,
+                    MitigationPlan: "Implement strict change control procedures, require client approval for all scope changes, maintain detailed cost tracking, and establish contingency reserves specifically for scope variations.",
+                    ContingencyPlan: "Negotiate budget increase with client, defer non-critical scope items to future phases, optimize resource allocation, and consider alternative lower-cost solutions for new requirements.",
+                    ImpactValue: 250000,
+                    BudgetContingency: 25000,
+                    Owner: "Project Manager",
+                    DueDate: new Date("2025-03-15").toISOString(),
+                    Category: "Financial",
+                    RiskScore: 0.52,
+                    EMV: 200000
+                },
+                {
+                    Title: "Financial Overrun - Material Costs",
+                    Description: "Expenses might go over planned budget because of increasing material and equipment prices",
+                    Month: "2025-01",
+                    ProjectCode: "EPC-2024-02",
+                    RiskStatus: "Open",
+                    Probability: 0.7,
+                    ImpactRating: 0.6,
+                    MitigationPlan: "Lock in prices with suppliers through fixed-price contracts, bulk purchase critical materials early, establish relationships with multiple suppliers, and monitor market price trends regularly.",
+                    ContingencyPlan: "Source materials from alternative suppliers, consider substitute materials meeting same specifications, negotiate extended payment terms, and seek value engineering opportunities to reduce overall material costs.",
+                    ImpactValue: 180000,
+                    BudgetContingency: 20000,
+                    Owner: "Procurement Manager",
+                    DueDate: new Date("2025-02-28").toISOString(),
+                    Category: "Procurement",
+                    RiskScore: 0.42,
+                    EMV: 126000
+                },
+                {
+                    Title: "Cost Escalation Risk",
+                    Description: "Total project expenditure could surpass the allocated financial envelope due to unexpected expenses",
+                    Month: "2025-01",
+                    ProjectCode: "EPC-2024-03",
+                    RiskStatus: "Open",
+                    Probability: 0.6,
+                    ImpactRating: 0.7,
+                    MitigationPlan: "Conduct thorough cost-benefit analysis for all major decisions, implement real-time cost monitoring dashboards, establish approval thresholds for unplanned expenses, and maintain detailed reserve analysis.",
+                    ContingencyPlan: "Activate management reserve funds, prioritize expenditures based on criticality, explore cost-sharing opportunities with partners, and implement immediate cost reduction initiatives across all work packages.",
+                    ImpactValue: 300000,
+                    BudgetContingency: 35000,
+                    Owner: "Finance Controller",
+                    DueDate: new Date("2025-04-30").toISOString(),
+                    Category: "Financial Planning",
+                    RiskScore: 0.42,
+                    EMV: 180000
+                },
+                {
+                    Title: "Budget Breach - Labor Variance",
+                    Description: "Actual spending may exceed budgeted amounts due to labor cost variances and overtime requirements",
+                    Month: "2025-01",
+                    ProjectCode: "EPC-2024-01",
+                    RiskStatus: "Open",
+                    Probability: 0.75,
+                    ImpactRating: 0.55,
+                    MitigationPlan: "Optimize resource leveling to minimize overtime, cross-train team members for flexibility, implement productivity improvement programs, and negotiate fixed-rate contracts with staffing agencies.",
+                    ContingencyPlan: "Reduce overtime through better scheduling, bring in contract workers for peak periods, automate repetitive tasks, and consider outsourcing non-critical activities to lower-cost providers.",
+                    ImpactValue: 150000,
+                    BudgetContingency: 18000,
+                    Owner: "HR Manager",
+                    DueDate: new Date("2025-03-31").toISOString(),
+                    Category: "Human Resources",
+                    RiskScore: 0.41,
+                    EMV: 112500
+                },
+                {
+                    Title: "Financial Constraint Risk",
+                    Description: "Project budget might be insufficient to cover all planned activities due to underestimation of costs",
+                    Month: "2025-01",
+                    ProjectCode: "EPC-2024-02",
+                    RiskStatus: "Open",
+                    Probability: 0.5,
+                    ImpactRating: 0.75,
+                    MitigationPlan: "Perform detailed bottom-up cost estimation reviews, engage subject matter experts in estimation process, use historical data from similar projects, and add appropriate contingency buffers based on risk assessment.",
+                    ContingencyPlan: "Seek additional funding from stakeholders, phase project delivery to match cash flow, identify and eliminate non-essential activities, and explore partnership opportunities to share costs and risks.",
+                    ImpactValue: 350000,
+                    BudgetContingency: 40000,
+                    Owner: "Project Director",
+                    DueDate: new Date("2025-05-15").toISOString(),
+                    Category: "Budget Management",
+                    RiskScore: 0.38,
+                    EMV: 175000
+                }
+            ];
+
+            try {
+                const response = await fetch('/api/risks/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(risks)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p>Added <strong>${data.imported || risks.length}</strong> test risks to the database.</p>
+                    <p>All risks have similar descriptions about budget overruns but different:</p>
+                    <ul>
+                        <li>Mitigation strategies</li>
+                        <li>Probability scores (0.5 to 0.8)</li>
+                        <li>Impact ratings (0.55 to 0.75)</li>
+                        <li>Risk scores (0.38 to 0.52)</li>
+                        <li>Owners and categories</li>
+                    </ul>
+                    <p><strong>Next step:</strong> <a href="/add">Go to Risk Form</a> and test the AI by entering:</p>
+                    <p style="background: #fff; padding: 10px; border-left: 3px solid #0070f3; margin: 10px 0;">
+                        "Project costs exceeding budget due to unexpected expenses"
+                    </p>
+                    <p>The AI should find multiple similar risks and display them in the table!</p>
+                `;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `<h3>❌ Error</h3><p>${data.error || 'Failed to add risks'}</p>`;
+                    addBtn.disabled = false;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `<h3>❌ Error</h3><p>${error.message}</p>`;
+                addBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
